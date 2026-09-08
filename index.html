@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>IT20 Team Finder</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #003366;
+        }
+
+        p {
+            font-size: 16px;
+        }
+
+        input {
+            width: 90%;
+            max-width: 600px;
+            padding: 12px;
+            font-size: 18px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        select {
+            width: 90%;
+            max-width: 600px;
+            height: 250px;
+            margin-top: 10px;
+            font-size: 16px;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 12px 30px;
+            font-size: 18px;
+            cursor: pointer;
+            background: #0078d4;
+            color: white;
+            border: none;
+            border-radius: 6px;
+        }
+
+        button:hover {
+            background: #106ebe;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+
+        #memberCount {
+            color: #666;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>🎉 IT20 Team Finder</h1>
+
+    <p>Type your first name or last name and select from the list.</p>
+
+    <input
+        type="text"
+        id="searchText"
+        placeholder="Example: Pakorn or Skunsongbunsiri"
+    >
+
+    <br>
+
+    <select id="nameList" size="10"></select>
+
+    <br>
+
+    <button id="findButton">Find My Team</button>
+
+    <div id="result"></div>
+    <div id="memberCount"></div>
+
+
+    <!-- members.js is in the same folder as index.html -->
+    <script src="./members.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const searchText = document.getElementById("searchText");
+            const nameList = document.getElementById("nameList");
+            const findButton = document.getElementById("findButton");
+            const result = document.getElementById("result");
+            const memberCount = document.getElementById("memberCount");
+
+            /*
+             * Check if members.js loaded successfully
+             */
+            if (typeof members === "undefined") {
+                result.innerHTML =
+                    "<span style='color:red'>" +
+                    "Unable to load members.js" +
+                    "</span>";
+
+                return;
+            }
+
+            memberCount.textContent =
+                "Loaded " + members.length + " members";
+
+
+            /*
+             * Populate member list
+             */
+            function populateList(data) {
+
+                nameList.innerHTML = "";
+
+                const sortedData = [...data].sort(
+                    (a, b) => a.name.localeCompare(b.name)
+                );
+
+                sortedData.forEach(member => {
+
+                    const option =
+                        document.createElement("option");
+
+                    option.textContent =
+                        member.name +
+                        " (Team " +
+                        member.team +
+                        ")";
+
+                    option.value = member.name;
+
+                    nameList.appendChild(option);
+                });
+            }
+
+
+            /*
+             * Search member
+             */
+            function filterNames() {
+
+                const search =
+                    searchText.value
+                        .toLowerCase()
+                        .trim();
+
+                if (search === "") {
+                    populateList(members);
+                    return;
+                }
+
+                const filtered =
+                    members.filter(member =>
+                        member.name
+                            .toLowerCase()
+                            .includes(search)
+                    );
+
+                populateList(filtered);
+            }
+
+
+            /*
+             * Open team photo
+             */
+            function openTeam() {
+
+                let selectedName =
+                    nameList.value;
+
+                /*
+                 * Automatically use first search result
+                 * if user does not manually select one
+                 */
+                if (
+                    !selectedName &&
+                    nameList.options.length > 0
+                ) {
+                    selectedName =
+                        nameList.options[0].value;
+                }
+
+                if (!selectedName) {
+
+                    alert(
+                        "Please search and select your name."
+                    );
+
+                    return;
+                }
+
+
+                const found =
+                    members.find(
+                        member =>
+                            member.name === selectedName
+                    );
+
+
+                if (!found) {
+
+                    alert("Name not found.");
+
+                    return;
+                }
+
+
+                result.innerHTML =
+                    "<strong>" +
+                    found.name +
+                    "</strong><br>" +
+                    "Team " +
+                    found.team +
+                    "<br><br>" +
+                    "Opening team photo...";
+
+
+                /*
+                 * Team photos are inside:
+                 *
+                 * TeamPhoto/Team1.png
+                 * TeamPhoto/Team2.png
+                 * ...
+                 * TeamPhoto/Team20.png
+                 */
+
+                const teamPhoto =
+                    "./TeamPhoto/Team" +
+                    found.team +
+                    ".png";
+
+
+                setTimeout(function () {
+
+                    window.location.href =
+                        teamPhoto;
+
+                }, 1000);
+            }
+
+
+            /*
+             * Events
+             */
+            searchText.addEventListener(
+                "input",
+                filterNames
+            );
+
+
+            findButton.addEventListener(
+                "click",
+                openTeam
+            );
+
+
+            /*
+             * Allow Enter key
+             */
+            searchText.addEventListener(
+                "keydown",
+                function (event) {
+
+                    if (event.key === "Enter") {
+                        openTeam();
+                    }
+                }
+            );
+
+
+            /*
+             * Initial member list
+             */
+            populateList(members);
+
+        });
+    </script>
+
+</body>
+</html>
