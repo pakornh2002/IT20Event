@@ -1,6 +1,7 @@
 const members = [
 
   // Team 1
+  { name: "Test, Test", team: 1, photo: "Team1.png" },
   { name: "Aeimpatanasuk, Kittiwat", team: 1, photo: "Team1.png" },
   { name: "Anujittiwong, Juthamard", team: 1, photo: "Team1.png" },
   { name: "Chaijaroen, Jirachai", team: 1, photo: "Team1.png" },
