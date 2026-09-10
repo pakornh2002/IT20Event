@@ -86,6 +86,12 @@
             font-size: 18px;
         }
 
+        #meetAtText {
+            font-size: 26px;
+            margin-top: 15px;
+            margin-bottom: 0;
+        }
+
         #memberCount {
             color: #666;
             margin-top: 15px;
@@ -134,6 +140,7 @@
     <div id="nameList"></div>
 
     <button id="findButton">Find My Team</button>
+    <p id="meetAtText"><strong>Meet at 13.15</strong></p>
 
     <div id="result"></div>
     <div id="memberCount"></div>
@@ -146,6 +153,7 @@
             const searchText = document.getElementById("searchText");
             const nameList = document.getElementById("nameList");
             const findButton = document.getElementById("findButton");
+            const meetAtText = document.getElementById("meetAtText");
             const result = document.getElementById("result");
             const memberCount = document.getElementById("memberCount");
 
@@ -260,6 +268,10 @@
                     return;
                 }
 
+                if (meetAtText) {
+                    meetAtText.style.display = "none";
+                }
+
                 result.innerHTML =
                     "<strong>" +
                     found.name +
@@ -267,7 +279,8 @@
                     "Team " +
                     found.team +
                     "<br><br>" +
-                    "Opening team photo...";
+                    "Opening team photo...<br><br>" +
+                    "<span style='font-size: 26px; font-weight: bold;'>Meet at 13.15</span>";
 
                 const teamPhoto =
                     "./TeamPhoto/Team" +
@@ -280,6 +293,15 @@
                 }, 700);
             }
 
+
+            window.addEventListener(
+                "pageshow",
+                function (event) {
+                    if (event.persisted) {
+                        window.location.reload();
+                    }
+                }
+            );
 
             searchText.addEventListener(
                 "input",
